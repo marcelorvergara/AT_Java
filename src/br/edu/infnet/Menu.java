@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -31,8 +32,10 @@ public class Menu {
                 System.out.println("1. Cadastrar Produto");
                 System.out.println("2. Cadastrar Cotação");
                 System.out.println("3. Consultar Corações por Produto");
-                System.out.println("4. Exibir produtos por cotação");
-                System.out.println("5. Sair");
+                System.out.println("4. Exibir detalhes do produto por cotação");
+                System.out.println("5. Excluir uma cotação");
+                System.out.println("6. Exibir cotações dentro do prazo de validade");
+                System.out.println("7. Sair");
 
                 opcao = scn.nextLine();
 
@@ -94,6 +97,9 @@ public class Menu {
                                 .orElse(null);
                         if (prdSearch != null){
                             ctao.setProduto(prdSearch);
+                        } else {
+                            System.out.println("Produto não cadastrado.");
+                            break;
                         }
                         //inserir cod cotação
                         System.out.println("Insira o código da cotação:");
@@ -134,21 +140,117 @@ public class Menu {
                         break;
                     }
                     case '3': {
+                        //listar os produtos cadastrados pra selecionar um
+                        System.out.println("Digite o código do produto para listar as cotações:\n");
+                        for (Produto prd: produtoList){
+                            System.out.println("---------------------");
+                            System.out.println("Nome do Produto: " + prd.getNome()+ " Código: " + prd.getCod());
+                        }
 
+                        //lendo o cod escolhido
+                        Scanner codScn = new Scanner(System.in);
+                        int codProd = codScn.nextInt();
+
+                        //pesquisando o produto
+                        List<Cotacao> cotSearch = new ArrayList<>();
+                        for (Cotacao cot: cotacaoList){
+                            if (cot.getProduto().getCod() == codProd){
+                                cotSearch.add(cot);
+                            }
+                        }
+                        if (cotSearch.size() != 0){
+                            //listar as cotações referentes ao produto
+                            String nomePrd = cotSearch.get(0).getProduto().getNome();
+                            System.out.println("Selecione o código da cotação para exibir os detalhes " +
+                                    "das cotações referentes ao produto: " + nomePrd);
+                            for (Cotacao cot : cotSearch){
+                                //calculando validade cotação
+                                DateTimeFormatter dt = DateTimeFormatter.ofPattern("'Proposta válida até' dd 'de' MMM 'de' yyyy\n");
+                                System.out.println();
+                                //listando as cotações
+                                System.out.println("Fornecedor: " + cot.getFornecedor() +
+                                        " | Cód. Cotação: " + cot.getCod() +
+                                        " | Validade Cotação: " + cot.getDtCotacao().plusDays(cot.getValidade()).format(dt) +
+                                        " | Valor R$" + cot.getValor().toString());
+                            }
+                            System.out.println("/n");
+                        } else {
+                            System.out.println("Produto não possui cotação.");
+                            break;
+                        }
+                        break;
+                    }
+                    case '4': {
+                        System.out.println("Entre com o código da cotação:");
+                        for (Cotacao cot : cotacaoList){
+                            System.out.println("Cód. Cotação: " + cot.getCod() +
+                                    " Produto: " + cot.getProduto().getNome());
+                        }
+                        //lendo
+                        Scanner scnCot = new Scanner(System.in);
+                        int codCot = scnCot.nextInt();
+                        //procurando na lista de cotações o produto
+                        Cotacao cotSearch = cotacaoList.stream()
+                                .filter( cotS -> codCot == cotS.getCod())
+                                .findAny()
+                                .orElse(null);
+                        if (cotSearch != null){
+                            Produto prd = cotSearch.getProduto();
+                            //listando as infos do produto
+                            System.out.println("Código do produto: " + prd.getCod()+
+                                    "\nNome do produto: " + prd.getNome() +
+                                    "\nDescrição do produto: " + prd.getDescricao() +
+                                    "\nFabricante do produto: " + prd.getFabricante() +
+                                    "\nClassificação do produto: " + prd.getClassificacao());
+                        } else {
+                            System.out.println("Cotação não encontrada.");
+                            break;
+                        }
                         break;
                     }
                     case '5': {
+                        System.out.println("Entre com o código da cotação que deseja excluir:\n");
+                        for (Cotacao cot : cotacaoList){
+                            //calculando validade cotação
+                            DateTimeFormatter dt = DateTimeFormatter.ofPattern("'Proposta válida até' dd 'de' MMM 'de' yyyy\n");
+                            System.out.println("Cód. Cotação: " + cot.getCod() +
+                                    " Produto: " + cot.getProduto().getNome() +
+                                    " Validade: " + cot.getDtCotacao().plusDays(cot.getValidade()).format(dt) +
+                                    " | Valor R$" + cot.getValor().toString() + "\n" );
+                        }
+
+                        //lendo o código da cotação que será excluída
+                        Scanner scnExc = new Scanner(System.in);
+                        int codExc = scnExc.nextInt();
+
+                        //pegando a cotação que será excluida
+                        Cotacao cotSearch = cotacaoList.stream()
+                                .filter( cotS -> codExc == cotS.getCod())
+                                .findAny()
+                                .orElse(null);
+                        if (cotSearch != null){
+                            cotacaoList.remove(cotacaoList.indexOf(cotSearch));
+                            System.out.println("Cotação excluída com sucesso.");
+                        }else{
+                            System.out.println("***Cotação não encontrada.***\n");
+                        }
+                        break;
+                    }
+                    case '7': {
                         System.out.println("Inté");
                         System.exit(0);
                     }
                 }
-            } while (!opcao.equals("5"));
+            } while (!opcao.equals("7"));
         } catch (NumberFormatException e){
             System.out.println("O campo código só aceita números.");
         } catch (DateTimeParseException e){
             System.out.println("Formato da data inserida é inválida.");
         } catch (StringIndexOutOfBoundsException e){
             System.out.println("Opção inválida.");
+        } catch (InputMismatchException e){
+            System.out.println("Entrada de dados inválida.5" +
+                    "");
         }
     }
 }
