@@ -50,6 +50,7 @@ public class Menu {
                 System.out.println("6. --- Exibir cotações dentro do prazo de validade --");
                 System.out.println("7. --- Listar produtos cadastrados ------------------");
                 System.out.println("8. --- Listar cotações cadastradas ------------------");
+                System.out.println("9. --- Alterar Produto ou Cotação -------------------");
                 System.out.println("Q. -------------------------Sair---------------------");
 
                 opcao = scn.nextLine();
@@ -178,8 +179,7 @@ public class Menu {
                         if (cotSearch.size() != 0){
                             //listar as cotações referentes ao produto
                             String nomePrd = cotSearch.get(0).getProduto().getNome();
-                            System.out.println("Selecione o código da cotação para exibir os detalhes " +
-                                    "das cotações referentes ao produto: " + nomePrd);
+                            System.out.println("\nCotações referentes ao produto: " + nomePrd);
                             for (Cotacao cot : cotSearch){
                                 //calculando validade cotação
                                 DateTimeFormatter dt = DateTimeFormatter.ofPattern("'Proposta válida até' dd 'de' MMM 'de' yyyy\n");
@@ -190,7 +190,6 @@ public class Menu {
                                         " | Validade Cotação: " + cot.getDtCotacao().plusDays(cot.getValidade()).format(dt) +
                                         " | Valor R$" + cot.getValor().toString().replace(".",","));
                             }
-                            System.out.println("\n");
                         } else {
                             System.out.println("\n*** Produto não possui cotação. ***\n");
                             break;
@@ -302,6 +301,112 @@ public class Menu {
                                     " \n-----------------------------");
                         }
                         break;
+                    }
+                    case '9': {
+                        System.out.println("Digite 1 para alterar produto ou 2 para alterar cotaçao:");
+                        Scanner op = new Scanner(System.in);
+                        int opR = op.nextInt();
+                        if (opR == 1){
+                            System.out.println("Indira o código do produto que deseja alterar: ");
+                            //listando os produtos cadastrados
+                            for (Produto prd: produtoList){
+                                System.out.println("Nome: " + prd.getNome() + " / Cód. Produto: " + prd.getCod());
+                            }
+                            //lendo a escolha do usuário
+                            Scanner scnPrd = new Scanner(System.in);
+                            int codPrd = scnPrd.nextInt();
+
+                            //procurando o index do produto
+                            int index = -1;
+                            for (Produto prd: produtoList){
+                                if (prd.getCod() == codPrd){
+                                    index = produtoList.indexOf(prd);
+                                }
+                            }
+
+                            //criando um novo produto para substituir o antigo
+                            Produto novoProduto = produtoList.get(index);
+                            //lendo os novos dados
+                            Scanner nvScn = new Scanner(System.in);
+
+                            System.out.println("Entre com um novo código ou utilize o código " + produtoList.get(index).getCod());
+                            String nvCod = nvScn.nextLine();
+                            if (!nvCod.equals("")){
+                                novoProduto.setCod(Integer.parseInt(nvCod));
+                            }
+                            System.out.println("Entre com um novo nome ou utilize o nome " + produtoList.get(index).getNome());
+                            String nvNome = nvScn.nextLine();
+                            if (!nvNome.equals("")){
+                                novoProduto.setNome(nvNome);
+                            }
+                            System.out.println("Entre com um novo tipo/classificação ou utilize " + produtoList.get(index).getClassificacao());
+                            String nvClass = nvScn.nextLine();
+                            if (!nvClass.equals("")){
+                                novoProduto.setClassificacao(nvClass);
+                            }
+                            System.out.println("Entre com uma nova descrição ou utilize " + produtoList.get(index).getDescricao());
+                            String nvDesc = nvScn.nextLine();
+                            if (!nvDesc.equals("")){
+                                novoProduto.setDescricao(nvDesc);
+                            }
+                            System.out.println("Entre com um novo fabricante ou utilize " + produtoList.get(index).getFabricante());
+                            String nvFabr = nvScn.nextLine();
+                            if (!nvFabr.equals("")){
+                                novoProduto.setFabricante(nvFabr);
+                            }
+                            produtoList.set(index,novoProduto);
+                            break;
+                        }else if(opR == 2){
+                            System.out.println("Digite o código da cotação que deseja alterar:");
+                            for (Cotacao cot: cotacaoList){
+                                System.out.println("Cód. Cotação " + cot.getCod() + " | Produto " + cot.getProduto().getNome());
+                            }
+                            Scanner scnCot = new Scanner(System.in);
+                            int cotCod = scnCot.nextInt();
+
+                            int index = -1;
+                            for (Cotacao cotNew : cotacaoList){
+                                if (cotNew.getCod() == cotCod){
+                                    index = cotacaoList.indexOf(cotNew);
+                                }
+                            }
+                            //criando uma nova cotação para substituir a escolhida pelo user
+                            Cotacao nvCot = cotacaoList.get(index);
+                            //lendo as infos
+                            Scanner scnNv = new Scanner(System.in);
+                            System.out.println("Entre com um novo código ou use " + nvCot.getCod());
+                            String nvCod = scnNv.nextLine();
+                            if (!nvCod.equals("")){
+                                nvCot.setCod(Integer.parseInt(nvCod));
+                            }
+                            System.out.println("Entre com uma nova empresa ou use " + nvCot.getFornecedor());
+                            String nvForn = scnNv.nextLine();
+                            if (!nvForn.equals("")){
+                                nvCot.setFornecedor(nvForn);
+                            }
+                            System.out.println("Entre com uma nova validade ou use " + nvCot.getValidade());
+                            String nvVal = scnNv.nextLine();
+                            if (!nvVal.equals("")){
+                                nvCot.setValidade(Integer.parseInt(nvVal));
+                            }
+
+                            System.out.println("Entre com uma nova quantidade ou use " + nvCot.getQuantidade());
+                            String nvQtd = scnNv.nextLine();
+                            if (!nvQtd.equals("")){
+                                nvCot.setQuantidade(Integer.parseInt(nvQtd));
+                            }
+                            System.out.println("Entre com um novo valor ou use " + nvCot.getValor());
+                            String nvValor = scnNv.nextLine();
+                            if (!nvValor.equals("")){
+                                nvCot.setValor(new BigDecimal(nvValor.toString().replace(",",".")));
+                            }
+                            cotacaoList.set(index,nvCot);
+                            break;
+                        }else {
+                            System.out.println("Opçao invalida");
+                            break;
+                        }
+
                     }
                     case 'Q': {
                         System.out.println("Inté");
