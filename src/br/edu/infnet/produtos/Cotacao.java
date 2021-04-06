@@ -13,6 +13,19 @@ public class Cotacao {
     int quantidade;
     BigDecimal valor;
 
+    public Cotacao() {
+    }
+
+    public Cotacao(int cod, Produto produto, String fornecedor, LocalDate dtCotacao, int validade, int quantidade, BigDecimal valor) {
+        this.cod = cod;
+        this.produto = produto;
+        this.fornecedor = fornecedor;
+        this.dtCotacao = dtCotacao;
+        this.validade = validade;
+        this.quantidade = quantidade;
+        this.valor = valor;
+    }
+
     public int getCod() {
         return cod;
     }

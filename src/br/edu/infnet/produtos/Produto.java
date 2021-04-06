@@ -8,6 +8,18 @@ public class Produto {
     String descricao;
     String classificacao;
 
+    public Produto() {
+
+    }
+
+    public Produto(int cod, String nome, String fabricante, String descricao, String classificacao) {
+        this.cod = cod;
+        this.nome = nome;
+        this.fabricante = fabricante;
+        this.descricao = descricao;
+        this.classificacao = classificacao;
+    }
+
     public int getCod() {
         return cod;
     }

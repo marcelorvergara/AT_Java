@@ -3,13 +3,11 @@ package br.edu.infnet;
 import br.edu.infnet.produtos.Cotacao;
 import br.edu.infnet.produtos.Produto;
 import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Menu {
 
@@ -20,6 +18,20 @@ public class Menu {
 
     public static void main(String[] args) throws Exception {
 
+        //mock data produtos
+        Produto prd1 = new Produto(122, "Coca-Cola", "Coca-Cola Company", "Refrigerante para as festinhas", "Alimentação");
+        Produto prd2 = new Produto(892,"Coxinha","Dona Moçoroca","Salgadinho para festas", "Alimentação");
+        Produto prd3 = new Produto(837,"Gasolina","Petrobrás", "Combustível para foguetes", "Locomoção");
+        Produto prd4 = new Produto(233,"Açucar","União", "Veneno para adoçar a vida", "Alimentação");
+        Produto prd5 = new Produto(222, "Televisão", "Sony", "Produto para alienação das pessoas", "Imobiliário");
+        //mock data lista de produtos
+        produtoList = Arrays.asList(prd1, prd2, prd3, prd4, prd5);
+        //mock data cotações
+        cotacaoList = Arrays.asList(new Cotacao(239,prd1,"Extra",LocalDate.of(2021, 4,10),30, 1, new BigDecimal("129.99")),
+                new Cotacao(123,prd1,"Mundial", LocalDate.of(2021, 4, 4),40,1,new BigDecimal("140.09")),
+                new Cotacao(901,prd1,"Prezunic", LocalDate.of(2021, 4, 1), 14,1, new BigDecimal("123.95")),
+                new Cotacao(196,prd3,"Shell", LocalDate.of(2021, 4, 4), 20,1,new BigDecimal("299.00")));
+
         try{
             //lendo a escolha do usuário na tela
             Scanner scn = new Scanner(System.in);
@@ -28,14 +40,17 @@ public class Menu {
             //loop para menu
             do{
                 //mostrando o menu
-                System.out.println("---Escolha a opção abaixo:");
-                System.out.println("1. Cadastrar Produto");
-                System.out.println("2. Cadastrar Cotação");
-                System.out.println("3. Consultar Corações por Produto");
-                System.out.println("4. Exibir detalhes do produto por cotação");
-                System.out.println("5. Excluir uma cotação");
-                System.out.println("6. Exibir cotações dentro do prazo de validade");
-                System.out.println("7. Sair");
+                System.out.println("\n\n");
+                System.out.println("**----------:: Escolha a opção abaixo ::-----------**");
+                System.out.println("1. --- Cadastrar Produto ----------------------------");
+                System.out.println("2. --- Cadastrar Cotação ----------------------------");
+                System.out.println("3. --- Consultar Corações por Produto ---------------");
+                System.out.println("4. --- Exibir detalhes do produto por cotação -------");
+                System.out.println("5. --- Excluir uma cotação --------------------------");
+                System.out.println("6. --- Exibir cotações dentro do prazo de validade --");
+                System.out.println("7. --- Listar produtos cadastrados ------------------");
+                System.out.println("8. --- Listar cotações cadastradas ------------------");
+                System.out.println("Q. -------------------------Sair---------------------");
 
                 opcao = scn.nextLine();
 
@@ -61,7 +76,7 @@ public class Menu {
                         String descPrd = prdScn.nextLine();
                         prd.setDescricao(descPrd);
                         //classificação prd
-                        System.out.println("Entre com o tipo de produto:");
+                        System.out.println("Entre com o tipo/classificação do produto:");
                         String classPrd = prdScn.nextLine();
                         prd.setClassificacao(classPrd);
                         //codigo prd
@@ -87,7 +102,8 @@ public class Menu {
                         System.out.println("Digite o código do produto a ser cadastrado na cotação:\n");
                         for (Produto prd: produtoList){
                             System.out.println("---------------------");
-                            System.out.println("Nome do Produto: " + prd.getNome()+ " Código: " + prd.getCod());
+                            System.out.println("Nome do Produto: " + prd.getNome() +
+                                    " / Código: " + prd.getCod());
                         }
                         int codProduto = Integer.parseInt(ctaoScn.nextLine());
                         //buscando o produto escolhido
@@ -129,7 +145,7 @@ public class Menu {
                         //valor
                         System.out.println("Qual o valor da cotação?");
                         String valor = ctaoScn.nextLine();
-                        ctao.setValor(new BigDecimal(valor));
+                        ctao.setValor(new BigDecimal(valor.replace(",",".")));
 
                         //inserindo a cotação na lista de cotações
                         cotacaoList.add(ctao);
@@ -144,7 +160,8 @@ public class Menu {
                         System.out.println("Digite o código do produto para listar as cotações:\n");
                         for (Produto prd: produtoList){
                             System.out.println("---------------------");
-                            System.out.println("Nome do Produto: " + prd.getNome()+ " Código: " + prd.getCod());
+                            System.out.println("Nome do Produto: " + prd.getNome()+
+                                    " / Código: " + prd.getCod());
                         }
 
                         //lendo o cod escolhido
@@ -171,11 +188,11 @@ public class Menu {
                                 System.out.println("Fornecedor: " + cot.getFornecedor() +
                                         " | Cód. Cotação: " + cot.getCod() +
                                         " | Validade Cotação: " + cot.getDtCotacao().plusDays(cot.getValidade()).format(dt) +
-                                        " | Valor R$" + cot.getValor().toString());
+                                        " | Valor R$" + cot.getValor().toString().replace(".",","));
                             }
-                            System.out.println("/n");
+                            System.out.println("\n");
                         } else {
-                            System.out.println("Produto não possui cotação.");
+                            System.out.println("\n*** Produto não possui cotação. ***\n");
                             break;
                         }
                         break;
@@ -184,7 +201,7 @@ public class Menu {
                         System.out.println("Entre com o código da cotação:");
                         for (Cotacao cot : cotacaoList){
                             System.out.println("Cód. Cotação: " + cot.getCod() +
-                                    " Produto: " + cot.getProduto().getNome());
+                                    " / Produto: " + cot.getProduto().getNome());
                         }
                         //lendo
                         Scanner scnCot = new Scanner(System.in);
@@ -216,7 +233,7 @@ public class Menu {
                             System.out.println("Cód. Cotação: " + cot.getCod() +
                                     " Produto: " + cot.getProduto().getNome() +
                                     " Validade: " + cot.getDtCotacao().plusDays(cot.getValidade()).format(dt) +
-                                    " | Valor R$" + cot.getValor().toString() + "\n" );
+                                    " | Valor R$" + cot.getValor().toString().replace(".",",") + "\n" );
                         }
 
                         //lendo o código da cotação que será excluída
@@ -236,12 +253,62 @@ public class Menu {
                         }
                         break;
                     }
+                    case '6': {
+                        DateTimeFormatter dt = DateTimeFormatter.ofPattern("'Proposta válida até' dd 'de' MMM 'de' yyyy\n");
+                        for (Cotacao cot : cotacaoList){
+                            LocalDate ldLimite = cot.getDtCotacao().plusDays(cot.getValidade());
+                            LocalDate hoje = LocalDate.now();
+                            if (!hoje.isAfter(ldLimite) ){
+                                System.out.println("Cód. Cotação: " + cot.getCod() +
+                                        "\n | Produto: " + cot.getProduto().getNome() +
+                                        "\n | Fornecedor: " + cot.getFornecedor() +
+                                        "\n | Validade da cotação: " + dt.format(cot.getDtCotacao())+
+                                        "\n | Valor: R$" + cot.getValor() +
+                                        "\n");
+                            }
+                        }
+                        break;
+                    }
                     case '7': {
+                        System.out.println("\nLista de Produtos Cadastrados:");
+                        for (Produto prd: produtoList) {
+                            System.out.println("Cód. Produto: " + prd.getCod() +
+                                    " / Nome: " + prd.getNome() +
+                                    " / Tipo: " + prd.getClassificacao() +
+                                    " / Descrição: " + prd.getDescricao());
+                        }
+                        break;
+                    }
+                    case '8': {
+                        DateTimeFormatter dtf1 = DateTimeFormatter.ofPattern("E, dd/MM/yyyy");
+                        LocalDate hoje = LocalDate.now();
+                        System.out.println("\nLista de Cotações Cadastradas:");
+                        for (Cotacao cot: cotacaoList){
+                            String condi = null;
+                            if (hoje.isAfter(cot.getDtCotacao().plusDays(cot.getValidade()))){
+                                condi = "Não";
+                            } else
+                            {
+                                condi = "Sim";
+                            }
+                            System.out.println("Cód. Cotação: " + cot.getCod() + "\n" +
+                                    " | Produto: " + cot.getProduto().getNome() + "\n" +
+                                    " | Fornecedor: " + cot.getFornecedor() + "\n" +
+                                    " | Dia da Cotação: " + dtf1.format(cot.getDtCotacao()) + "\n" +
+                                    " | Validade: " + cot.getValidade() + "\n" +
+                                    " | Quantidade: " + cot.getQuantidade() + "\n" +
+                                    " | Valor: " + cot.getValor() + "\n" +
+                                    " | Dentro do Prazo? " + condi  +
+                                    " \n-----------------------------");
+                        }
+                        break;
+                    }
+                    case 'Q': {
                         System.out.println("Inté");
                         System.exit(0);
                     }
                 }
-            } while (!opcao.equals("7"));
+            } while (!opcao.equals("Q"));
         } catch (NumberFormatException e){
             System.out.println("O campo código só aceita números.");
         } catch (DateTimeParseException e){
@@ -249,8 +316,9 @@ public class Menu {
         } catch (StringIndexOutOfBoundsException e){
             System.out.println("Opção inválida.");
         } catch (InputMismatchException e){
-            System.out.println("Entrada de dados inválida.5" +
-                    "");
+            System.out.println("Entrada de dados inválida.");
+        } catch (DateTimeException e) {
+            System.out.println("A data deve obedecer a formatação DD MM AAAA");
         }
     }
 }
