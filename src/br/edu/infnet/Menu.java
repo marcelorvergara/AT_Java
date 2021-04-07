@@ -27,7 +27,7 @@ public class Menu {
         //mock data lista de produtos
         produtoList = Arrays.asList(prd1, prd2, prd3, prd4, prd5);
         //mock data cotações
-        cotacaoList = Arrays.asList(new Cotacao(239,prd1,"Extra",LocalDate.of(2021, 4,10),30, 1, new BigDecimal("129.99")),
+        cotacaoList = Arrays.asList(new Cotacao(239,prd1,"Extra",LocalDate.of(2019, 4,10),30, 1, new BigDecimal("129.99")),
                 new Cotacao(123,prd1,"Mundial", LocalDate.of(2021, 4, 4),40,1,new BigDecimal("140.09")),
                 new Cotacao(901,prd1,"Prezunic", LocalDate.of(2021, 4, 1), 14,1, new BigDecimal("123.95")),
                 new Cotacao(196,prd3,"Shell", LocalDate.of(2021, 4, 4), 20,1,new BigDecimal("299.00")));
